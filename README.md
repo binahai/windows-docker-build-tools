@@ -30,3 +30,13 @@ This step is done on an EC2 that is based on the **Windows Docker Build Dotnet S
 mkdir -p "c:/temp/emptydir"
 docker build -m 4G -t "buildtools2019" -f "c:/temp/emptydir/Dockerfile.buildtools" "c:/temp/emptydir"
 ```
+
+## Troubleshooting
+
+- How do I fix DNS issues in Docker windows images/containers?
+
+  Use the **Default Switch** network during the build time / runtime
+  ```bash
+  docker build -m 4G --network "Default Switch" -t "buildtools2019" -f "c:/temp/emptydir/Dockerfile.buildtools" "c:/temp/emptydir"
+  docker run --rm -it --network="Default Switch" "buildtools2019:latest"
+  ```
