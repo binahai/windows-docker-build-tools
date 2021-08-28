@@ -1,0 +1,24 @@
+name: Windows Docker Build Tools
+description: Builds the Windows Build Tools Docker image, based on the AMI windows-docker-dotnet-sdk
+schemaVersion: 1.0
+
+phases:
+  - name: build
+    steps:
+      - name: build
+        action: ExecutePowerShell
+        inputs:
+          commands:
+            - Remove-Item alias:curl
+            - refreshenv
+            - mkdir -p c:/temp/emptydir
+            - curl -sL -o "c:/temp/emptydir/Dockerfile.buildtools" "https://raw.githubusercontent.com/binahai/windows-docker-build-tools/master/Dockerfile.buildtools"
+            - docker build -m 4G -t "buildtools2019" -f "c:/temp/emptydir/Dockerfile.buildtools" "c:/temp/emptydir"
+
+  - name: validate
+    steps:
+      - name: validate
+        action: ExecutePowerShell
+        inputs:
+          commands:
+            - docker inspect buildtools2019

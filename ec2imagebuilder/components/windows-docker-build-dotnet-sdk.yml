@@ -1,0 +1,37 @@
+name: Windows Docker Build Dotnet SDK
+description: Prepare AMI for building Windows Docker images for .NET SDK 4.8 Apps
+schemaVersion: 1.0
+
+phases:
+  - name: build
+    steps:
+      - name: install
+        action: ExecutePowerShell
+        inputs:
+          commands:
+            - DISM /Online /Enable-Feature /FeatureName:NetFx3 /All
+            - reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /f /v "AllowDevelopmentWithoutDevLicense" /d "1"
+            - Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+            - SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+            - refreshenv
+            - choco install -y --no-progress --limitoutput --force curl zip unzip wget docker-cli jq git.install
+            - cmd /c mklink c:\Windows\system32\bash.exe "C:\Program Files\Git\bin\bash.exe"
+            - mkdir c:\downloads
+            - Remove-Item alias:curl
+            - refreshenv
+            - curl -sL -o "c:/downloads/SSMAgent_latest.exe" "https://amazon-ssm-eu-west-1.s3.eu-west-1.amazonaws.com/latest/windows_amd64/AmazonSSMAgentSetup.exe"
+            - choco install -y --no-progress --limitoutput --force awscli --version 2.1.27            
+            - docker pull mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2019
+  - name: validate
+    steps:
+      - name: validate
+        action: ExecutePowerShell
+        inputs:
+          commands:
+            - choco --version
+            - aws --version
+            - git --version
+            - bash --version
+            - curl --version
+            - docker --version
+            - docker images

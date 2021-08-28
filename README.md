@@ -15,8 +15,18 @@ This recipe includes the following packages:
 
 ## Getting Started
 
-Download the Dockerfile file
+### Download the Dockerfile file
 
 ```bash
-curl -sL -o Dockerfile.buildtools "https://raw.githubusercontent.com/binahai/windows-docker-build-tools/master/Dockerfile.buildtools"
+mkdir -p "c:/temp/emptydir"
+curl -sL -o "c:/temp/emptydir/Dockerfile.buildtools" "https://raw.githubusercontent.com/binahai/windows-docker-build-tools/master/Dockerfile.buildtools"
+```
+
+### Build Docker image
+
+This step is done on an EC2 that is based on the **Windows Docker Build Dotnet SDK** AMI.
+
+```bash
+mkdir -p "c:/temp/emptydir"
+docker build -m 4G -t "buildtools2019" -f "c:/temp/emptydir/Dockerfile.buildtools" "c:/temp/emptydir"
 ```
