@@ -26,15 +26,19 @@ RUN @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -I
 # `--install-args` is based on https://docs.microsoft.com/en-us/visualstudio/install/build-tools-container?view=vs-2019
 ARG VISUAL_STUDIO_BUILDTOOLS_VERSION
 ENV VISUAL_STUDIO_BUILDTOOLS_VERSION=${VISUAL_STUDIO_BUILDTOOLS_VERSION}
-ARG VISUAL_STUDIO_VCTOOLS_VERSION
-ENV VISUAL_STUDIO_VCTOOLS_VERSION=${VISUAL_STUDIO_VCTOOLS_VERSION}
 RUN `
     choco install -y --no-progress --limitoutput --version="%VISUAL_STUDIO_BUILDTOOLS_VERSION%" visualstudio2019buildtools `
     --install-args "--quiet --wait --norestart --nocache modify --installPath C:\BuildTools --add Microsoft.VisualStudio.Component.Windows10SDK.18362 --add Microsoft.VisualStudio.Workload.VCTools --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 --remove Microsoft.VisualStudio.Component.Windows81SDK"
+
+# Install Visual Studio VC Tools with chocolatey
+ARG VISUAL_STUDIO_VCTOOLS_VERSION
+ENV VISUAL_STUDIO_VCTOOLS_VERSION=${VISUAL_STUDIO_VCTOOLS_VERSION}
 RUN choco install -y --no-progress --limitoutput --version="%VISUAL_STUDIO_VCTOOLS_VERSION%" visualstudio2019-workload-vctools --install-args "--quiet --wait --norestart --nocache modify --installPath C:\BuildTools"
 
-# Install build tools
+# Install LLVM
 RUN choco install -y --no-progress --limitoutput llvm
+
+# Install Development Tools
 RUN choco install -y --no-progress --limitoutput git vim unzip 
 RUN mklink "%ALLUSERSPROFILE%\chocolatey\bin\bash.exe" "C:\Program Files\Git\bin\bash.exe"
 
@@ -48,9 +52,13 @@ ARG PYTHON_VERSION
 ENV PYTHON_VERSION=${PYTHON_VERSION}
 RUN choco install -y --no-progress --limitoutput python3 --version="%PYTHON_VERSION%" --params "/quiet /PrependPath=1 /InstallAllUsers=1"
 
+# Enable Developer Mode
+RUN reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /f /v "AllowDevelopmentWithoutDevLicense" /d "1"
 
 LABEL `
+    keep="true" `
     windows.buildtools="true" `
     windows.buildtools.python_version="${PYTHON_VERSION}" `
     windows.buildtools.cmake_version="${CMAKE_VERSION}" `
-    keep="true"
+    windows.buildtools.visualstudio2019buildtools_version="${VISUAL_STUDIO_BUILDTOOLS_VERSION}" `
+    windows.buildtools.visualstudio2019vctools_version="${VISUAL_STUDIO_VCTOOLS_VERSION}"
