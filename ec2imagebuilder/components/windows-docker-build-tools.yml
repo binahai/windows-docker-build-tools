@@ -11,9 +11,10 @@ phases:
           commands:
             - Remove-Item alias:curl
             - refreshenv
-            - mkdir -p c:/temp/emptydir
+            - mkdir -p "c:/temp/emptydir"
             - curl -sL -o "c:/temp/emptydir/Dockerfile.buildtools" "https://raw.githubusercontent.com/binahai/windows-docker-build-tools/master/Dockerfile.buildtools"
-            - docker build -m 4G -t "buildtools2019" -f "c:/temp/emptydir/Dockerfile.buildtools" "c:/temp/emptydir"
+            - docker build --build-arg DOTNET_SDK_VERSION="4.8" -m 4G -t "buildtools2019-dotnet4.8" -f "c:/temp/emptydir/Dockerfile.buildtools" "c:/temp/emptydir"
+            - docker build --build-arg DOTNET_SDK_VERSION="3.5" -m 4G -t "buildtools2019-dotnet3.5" -f "c:/temp/emptydir/Dockerfile.buildtools" "c:/temp/emptydir"
 
   - name: validate
     steps:
@@ -21,4 +22,4 @@ phases:
         action: ExecutePowerShell
         inputs:
           commands:
-            - docker inspect buildtools2019
+            - docker inspect buildtools2019-dotnet4.8 buildtools2019-dotnet3.5
