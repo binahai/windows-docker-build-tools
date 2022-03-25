@@ -1,4 +1,4 @@
-# escape=`
+ll# escape=`
 
 ARG DOTNET_SDK_VERSION="4.8"
 ARG VISUAL_STUDIO_BUILDTOOLS_VERSION="16.11.2.0"
@@ -39,7 +39,7 @@ RUN choco install -y --no-progress --limitoutput --version="%VISUAL_STUDIO_VCTOO
 RUN choco install -y --no-progress --limitoutput llvm
 
 # Install Development Tools
-RUN choco install -y --no-progress --limitoutput git vim unzip 
+RUN choco install -y --no-progress --limitoutput git vim unzip awscli docker-cli
 RUN mklink "%ALLUSERSPROFILE%\chocolatey\bin\bash.exe" "C:\Program Files\Git\bin\bash.exe"
 
 # Install CMake
