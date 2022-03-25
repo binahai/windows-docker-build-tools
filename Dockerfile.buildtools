@@ -3,11 +3,11 @@
 ARG DOTNET_SDK_VERSION="4.8"
 ARG VISUAL_STUDIO_BUILDTOOLS_VERSION="16.11.2.0"
 ARG VISUAL_STUDIO_VCTOOLS_VERSION="1.0.1"
-ARG CMAKE_VERSION="3.18.2"
+ARG CMAKE_VERSION="3.20.0"
 ARG PYTHON_VERSION="3.8.6"
 
 # Use the latest Windows Server Core image with .NET Framework 4.8.
-FROM mcr.microsoft.com/dotnet/framework/sdk:${DOTNET_SDK_VERSION}-windowsservercore-ltsc2019
+FROM mcr.microsoft.com/dotnet/framework/sdk:${DOTNET_SDK_VERSION}-20220215-windowsservercore-ltsc2019
 
 ENV BUILDING_INSIDE_DOCKER true
 
@@ -56,7 +56,7 @@ RUN choco install -y --no-progress --limitoutput python3 --version="%PYTHON_VERS
 RUN reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /f /v "AllowDevelopmentWithoutDevLicense" /d "1"
 
 LABEL `
-    keep="true" `
+    binahai.keep="true" `
     windows.buildtools="true" `
     windows.buildtools.python_version="${PYTHON_VERSION}" `
     windows.buildtools.cmake_version="${CMAKE_VERSION}" `
